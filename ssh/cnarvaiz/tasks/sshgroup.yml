@@ -1,0 +1,7 @@
+---
+- name: SSHusers group creation
+  group:
+    name: sshusers
+    state: present
+  tags:
+    - ssh

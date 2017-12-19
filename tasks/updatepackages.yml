@@ -1,0 +1,11 @@
+---
+- hosts: debian
+  remote_user: lance
+  become: true
+  tasks:
+        - name: Run the equivalent of "apt-get update" as a separate step
+          apt:
+                update_cache: yes
+        - name: Update all packages to the latest version
+          apt:
+                upgrade: dist

@@ -1,0 +1,17 @@
+---
+
+- name: Adding acombs.
+  user:
+    name: acombs
+    password: fAN0n2f1iPuq6
+    shell: /bin/bash
+    groups: sshusers
+    append: yes
+  tags:
+      - ssh
+
+- name: Add acombs ssh key
+  authorized_key:
+    user: acombs
+    state: present
+    key: "{{ lookup('file', '/home/lance/ansible/ssh/acombs/files/id_ed25519.pub') }}" 

@@ -1,0 +1,12 @@
+---
+- hosts: email
+  remote_user: lance
+  become: true
+  tasks:
+    - name: Create encfs
+      expect:
+        command: encfs /encrypted-mail /decrypted-mail --public
+        responses:
+                  'New Encfs Password:': "oafeVa8a"
+                  'Verify Encfs Password:': "oafeVa8a"
+        echo: yes                                         

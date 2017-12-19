@@ -1,0 +1,8 @@
+---
+- hosts: debian
+  remote_user: lance
+  tasks:
+        - name: Remove UFW
+          apt:
+            name: ufw
+            state: absent

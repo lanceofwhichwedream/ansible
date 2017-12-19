@@ -1,0 +1,8 @@
+---
+
+- name: apply config to all nodes
+  hosts: rmsathome
+  remote_user: winsible
+
+  roles:
+    - common

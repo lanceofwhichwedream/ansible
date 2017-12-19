@@ -1,0 +1,11 @@
+---
+
+- name: Adding users.
+  user:
+    name: lance
+    shell: /bin/bash
+    groups: sudo,sshusers
+    append: yes
+  tags:
+      - ssh                                 
+

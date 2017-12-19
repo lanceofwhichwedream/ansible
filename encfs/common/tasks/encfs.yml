@@ -1,0 +1,20 @@
+---
+- name: Install encfs
+  apt:
+    name: encfs
+    state: present
+
+- name: Create Encrypted-Mail
+  file:
+    path: /encrypted-mail
+    state: directory
+
+- name: Create Decrypted-Mail
+  file:
+    path: /decrypted-mail
+    state: directory
+    group: mail
+    mode: 0755
+
+- name: Install fuse kernel module
+  command: modprobe fuse

@@ -1,0 +1,77 @@
+---
+- name: Install opendkim
+  apt: name={{item}} state=present update_cache=yes
+  with_items:
+    - opendkim
+    - opendkim-tools
+
+- name: Create directory
+  file:
+    path: /etc/opendkim/
+    owner: opendkim
+    group: opendkim
+    mode: 0700
+    state: directory
+
+- name: Generate opendkim 
+  shell: opendkim-genkey -r -h rsa-sha256 -d '{{domain}}' -s mail
+  args:
+    chdir: /etc/opendkim/
+    creates: mail
+
+- name: Check for Opendkim Mail file
+  stat:
+    path: /etc/opendkim/mail
+  register: mail
+
+- name: Rename mail.private
+  command: mv /etc/opendkim/mail.private /etc/opendkim/mail
+  when: mail.stat.exists != True
+
+- name: Copy mail.txt to localhost
+  fetch:
+    src: /etc/opendkim/mail.txt
+    dest: files/mail.txt
+
+- name: Create KeyTable SigningTable and TrustedHosts
+  file: name=/etc/opendkim/{{item}} state=touch owner=opendkim
+  with_items:
+    - KeyTable
+    - SigningTable
+    - TrustedHosts
+
+- name: Configure KeyTable
+  lineinfile: name=/etc/opendkim/KeyTable line='{{ domain }} {{domain}}:mail:/etc/opendkim/mail'
+
+- name: Configure SigningTable
+  lineinfile: name=/etc/opendkim/SigningTable line='*@{{domain}} {{domain}}'
+
+- name: Configure TrustedHosts
+  lineinfile:
+    name: /etc/opendkim/TrustedHosts
+    line: '127.0.0.1'
+
+- name: Install Opendkim.conf
+  copy:
+    src: opendkim.conf
+    dest: /etc/opendkim.conf
+    owner: root
+    group: root
+    mode: 0544
+  notify: Restart Opendkim
+
+- name: Add Milters to Postfix
+  lineinfile:
+    name: /etc/postfix/main.cf
+    line: "smtpd_milters = inet:127.0.0.1:8891"
+
+- name: Add Milters to Postfix part 2 Electric Bugaloo
+  lineinfile:
+    name: /etc/postfix/main.cf
+    line: "non_smtpd_milters = $smtpd_milters"
+
+- name: Add Milters to Postfix part 3 The ReMiltering
+  lineinfile:
+    name: /etc/postfix/main.cf
+    line: "milter_default_action = accept"
+  notify: Restart Postfix 

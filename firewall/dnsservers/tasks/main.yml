@@ -1,0 +1,68 @@
+---
+
+- ufw:
+    rule: deny
+    port: '1:21'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '23:52'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '54:67'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '69:8124'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '8126:19998'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '20000:65535'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '1:21'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '23:52'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '54:67'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '69:8124'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '8126:19998'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '20000:65535'
+    proto: udp
+
+- ufw:
+    state: disabled
+
+- ufw:
+    state: enabled
+    policy: allow 

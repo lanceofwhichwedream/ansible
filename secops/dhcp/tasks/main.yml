@@ -1,0 +1,5 @@
+---
+
+- name: Allow DHCP
+  command: ufw allow "WWW Full"
+  notify: Restart ufw

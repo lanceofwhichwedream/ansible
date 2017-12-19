@@ -1,0 +1,51 @@
+---
+- name: Install Postfix Main.cf
+  copy:
+    src: main.cf
+    dest: /etc/postfix/main.cf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Copy Mysql virtual mailbox domains maps and alias maps
+  copy: src={{ item }} dest=/etc/postfix/{{item}}
+  with_items:
+    - mysql-virtual-mailbox-domains.cf
+    - mysql-virtual-mailbox-maps.cf
+    - mysql-virtual-alias-maps.cf
+
+- name: Create Postfix Maps Directory
+  file:
+    path: /etc/postfix/maps
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Copy Header Checks
+  copy: src={{ item }} dest=/etc/postfix/maps/{{ item }}
+  with_items:
+    - header_checks
+    - mime_header_checks
+
+- name: Set mailuser password
+  replace: name=/etc/postfix/{{item}} regexp='TEMPORARY$' replace={{mailuser_mysql_password}}
+  with_items:
+    - mysql-virtual-mailbox-domains.cf
+    - mysql-virtual-mailbox-maps.cf
+    - mysql-virtual-alias-maps.cf
+  notify: Restart Postfix
+
+- name: Verify Postfix Domains works
+  command: postmap -q '{{ domain }}' mysql:/etc/postfix/mysql-virtual-mailbox-domains.cf
+  register: domains
+- fail:
+    msg: "Whoops! Something went wrong with Domains"
+  when: domains.stdout != "1"
+
+- name: Verify Postfix Mailbox Maps works
+  command: postmap -q '{{ email_address }}' mysql:/etc/postfix/mysql-virtual-mailbox-maps.cf
+  register: maps
+- fail:
+    msg: "Whoops! Something went wrong with Maps"
+  when: maps.stdout != "1"

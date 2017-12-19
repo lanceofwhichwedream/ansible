@@ -1,0 +1,8 @@
+---
+
+
+- name: Detect and disable SMBv1
+  hosts: pxpower
+
+  roles:
+    - common

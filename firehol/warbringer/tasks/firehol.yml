@@ -1,0 +1,10 @@
+---
+
+- name: Copy firehol
+  copy:
+    src: /home/lance/ansible/firehol/warbringer/files/firehol
+    dest: /etc/firehol/firehol.conf
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart dnsmasq

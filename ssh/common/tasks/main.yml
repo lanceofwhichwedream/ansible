@@ -1,0 +1,16 @@
+---
+
+- name: Create sshusers group
+  include: sshgroup.yml
+  tags:
+    - ssh
+
+- name: Add users to sshusers group
+  include: sshusers.yml
+  tags:
+    - ssh
+
+- name: Setup ssh configuration
+  include: setup.yml
+  tags:
+    - ssh

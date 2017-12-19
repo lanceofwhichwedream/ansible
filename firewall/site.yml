@@ -1,0 +1,50 @@
+---
+
+- name: apply config to all nodes
+  hosts: all
+  remote_user: lance
+
+  roles:
+    - common
+
+- name: apply webserver specific config
+  hosts: webservers
+  remote_user: lance
+  
+  roles:
+    - webservers
+
+- name: apply dhcp specific config
+  hosts: dhcpservers
+  remote_user: lance
+  
+  roles:
+    - dhcpservers
+
+- name: apply dns specific config
+  hosts: dhcpservers
+  remote_user: lance
+  
+  roles:
+    - dnsservers
+
+- name: apply vpnservers specific config
+  hosts: vpnservers
+  remote_user: lance
+
+  roles: 
+    - vpnservers
+
+- name: apply hypervisors specific config
+  hosts: hypervisors[1:]
+  remote_user: lance
+
+  roles:
+    - hypervisors
+
+- name: apply warbringer specific config
+  hosts: hypervisors[0]
+  remote_user: lance
+
+  roles:
+    - warbringer

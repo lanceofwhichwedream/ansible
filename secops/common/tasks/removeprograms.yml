@@ -1,0 +1,29 @@
+---
+
+- name: Disable avahi
+  apt:
+    name: avahi-daemon
+    state: absent
+    purge: yes
+    autoremove: yes
+
+- name: Disable cups-daemon
+  apt:
+    name: cups-daemon
+    state: absent
+    purge: yes
+    autoremove: yes
+
+- name: Disable cupsd
+  apt:
+    name: cups-browsed
+    state: absent
+    purge: yes
+    autoremove: yes
+
+- name: Disable minissdpd
+  apt:
+    name: minissdpd
+    state: absent
+    purge: yes
+    autoremove: yes

@@ -1,0 +1,4 @@
+---
+
+- name: Install firehol
+  include: installfirehol.yml

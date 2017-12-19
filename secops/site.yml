@@ -1,0 +1,29 @@
+---
+
+- name: apply config to all nodes
+  hosts: all
+  remote_user: lance
+
+  roles:
+    - common
+
+- name: apply webserver specific config
+  hosts: webservers
+  remote_user: lance
+  
+  roles:
+    - webservers
+
+- name: apply dnsmasq specific config
+  hosts: dnsmasq
+  remote_user: lance
+  
+  roles:
+    - dnsmasq
+
+      #- name: apply DHCP specific config
+  #  hosts: dhcpservers
+  #  remote_user: lance
+  
+  #  roles:
+    #    - dhcp

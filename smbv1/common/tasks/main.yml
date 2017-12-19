@@ -1,0 +1,13 @@
+---
+
+- name: Check for smbv1
+  win_shell: |
+    (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters").SMB1
+  register: smbv1_check
+
+- debug: var=smbv1_check.stdout
+
+- name: Disable smbv1
+  win_shell: |
+    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters" SMB1 -Type DWORD -Value 0 –Force
+  when: smbv1_check.stdout != "0\r\n"

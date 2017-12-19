@@ -1,0 +1,48 @@
+---
+
+- name: Check for updates
+  win_updates:
+    category_names:
+      - Application
+      - Connectors
+      - CriticalUpdates
+      - DefinitionUpdates
+      - DeveloperKits
+      - FeaturePacks
+      - Guidance
+      - SecurityUpdates
+      - ServicePacks
+      - Tools
+      - UpdateRollups
+      - Updates
+      - CriticalUpdates
+    state: searched
+  register: update_count
+- name: debug update_count
+  debug: 
+    var: update_count
+- name: Install Updates
+  win_updates:
+    category_names:
+      - Application
+      - Connectors
+      - CriticalUpdates
+      - DefinitionUpdates
+      - DeveloperKits
+      - FeaturePacks
+      - Guidance
+      - SecurityUpdates
+      - ServicePacks
+      - Tools
+      - UpdateRollups
+      - Updates
+      - CriticalUpdates
+    state: installed
+    when: update_count.found_update_count > 0
+  register: update_result
+- name: Debug update_result
+  debug:
+    var: update_result
+- name: Reboot after Updates
+  win_reboot:
+  when: update_result.reboot_required == True

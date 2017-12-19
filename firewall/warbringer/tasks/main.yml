@@ -1,0 +1,368 @@
+---
+
+- ufw:
+    rule: deny
+    port: '1:21'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '23:110'
+    proto: tcp
+    
+- ufw:
+    rule: deny
+    port: '112:756'
+    proto: tcp
+    
+- ufw: 
+    rule: deny
+    port: '758:1816'
+    proto: tcp
+
+- ufw: 
+    rule: deny
+    port: '1818:1899'
+    proto: tcp
+    
+- ufw: 
+    rule: deny
+    port: '1902:2048'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '2050:2999'
+    proto: tcp
+    
+- ufw:
+    rule: deny
+    port: '3004:5431'
+    proto: tcp
+    
+- ufw: 
+    rule: deny
+    port: '5433:5899'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '5902:6770'
+    proto: tcp
+
+- ufw: 
+    rule: deny
+    port: '6772:8111'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '8113:8124'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '8126:15390'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '15392:19998'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '20000:32409'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '32411'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '32415:32468'
+    proto: tcp
+    
+- ufw:
+    rule: deny
+    port: '32470:32599'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '32601:33634'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '33636:33744'
+    proto: tcp
+
+- ufw: 
+    rule: deny
+    port: '33746:34248' 
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '34250:38730'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '38732:39858'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '39860:41854'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '41856:43590'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '43592:45678'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '45680:46606'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '46608:48656'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '48658:49920'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '49922:51707'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '51709:52600'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '52602:52916'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '52918:58139'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '58141:58845'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '58847:59311'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '59313:65535'
+    proto: tcp
+
+- ufw:
+    rule: deny
+    port: '1:21'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '23:110'
+    proto: udp
+    
+- ufw:
+    rule: deny
+    port: '112:756'
+    proto: udp
+    
+- ufw: 
+    rule: deny
+    port: '758:1816'
+    proto: udp
+
+- ufw: 
+    rule: deny
+    port: '1818:1899'
+    proto: udp
+    
+- ufw: 
+    rule: deny
+    port: '1902:2048'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '2050:2999'
+    proto: udp
+    
+- ufw:
+    rule: deny
+    port: '3004:5431'
+    proto: udp
+    
+- ufw: 
+    rule: deny
+    port: '5433:5899'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '5902:6770'
+    proto: udp
+
+- ufw: 
+    rule: deny
+    port: '6772:8111'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '8113:8124'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '8126:15390'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '15392:19998'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '20000:32409'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '32411'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '32415:32468'
+    proto: udp
+    
+- ufw:
+    rule: deny
+    port: '32470:32599'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '32601:33634'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '33636:33744'
+    proto: udp
+
+- ufw: 
+    rule: deny
+    port: '33746:34248' 
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '34250:38730'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '38732:39858'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '39860:41854'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '41856:43590'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '43592:45678'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '45680:46606'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '46608:48656'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '48658:49920'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '49922:51707'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '51709:52600'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '52602:52916'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '52918:58139'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '58141:58845'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '58847:59311'
+    proto: udp
+
+- ufw:
+    rule: deny
+    port: '59313:65535'
+    proto: udp
+
+- ufw:
+    state: disabled
+
+- ufw:
+    state: enabled
+    policy: allow

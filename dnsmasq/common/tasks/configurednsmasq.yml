@@ -1,0 +1,59 @@
+---
+
+- name: Configure domain-needed
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#interface='
+    line='interface=ens3'
+  notify: Restart dnsmasq
+
+- name: Configure domain-needed
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#domain-needed'
+    line='domain-needed'
+  notify: Restart dnsmasq
+
+- name: Configure bogus-priv
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#bogus-priv'
+    line='bogus-priv'
+  notify: Restart dnsmasq
+
+- name: Configure no-resolv
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#no-resolv'
+    line='no-resolv'
+  notify: Restart dnsmasq
+
+- name: Add upstream dns server
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#server='
+    line='server=216.146.35.35'
+  notify: Restart dnsmasq
+
+- name: Add other upstream dns server
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp=''
+    state=present
+    insertafter=EOF
+    line='server=216.146.36.36'
+  notify: Restart dnsmasq
+
+- name: No hosts file
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#no-hosts'
+    line='no-hosts'
+  notify: Restart dnsmasq
+
+- name: Add additional hosts file
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#addn-hosts'
+    line='addn-hosts=/etc/addnhosts'
+  notify: Restart dnsmasq

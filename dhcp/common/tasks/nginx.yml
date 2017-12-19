@@ -1,0 +1,36 @@
+---
+
+- name: Install Nginx-light
+  apt:
+    name: nginx-light
+    update_cache: yes
+    state: present
+
+- name: Copy nginx config
+  copy:           
+    src: /home/lance/ansible/dhcp/common/files/default
+    dest: /etc/nginx/sites-enabled/default
+    owner: root   
+    group: root   
+    mode: 0644    
+    force: yes    
+  notify: Restart nginx
+
+- name: Create var www
+  file:
+    path: /var/www/html/preseed
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+    recurse: yes
+
+- name: Copy Preseed file
+  copy:
+    src: /home/lance/ansible/dhcp/common/files/preseed.cfg
+    dest: /var/www/html/preseed/preseed.cfg
+    owner: root
+    group: root
+    mode: 0644
+    force: yes
+  notify: Restart nginx

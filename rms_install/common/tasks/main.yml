@@ -1,0 +1,71 @@
+---
+    - name: Disable Password Complexity
+      win_security_policy:
+        section: System Access
+        key: PasswordComplexity
+        value: 0
+    - name: Disable Windows Firewall
+      win_firewall:
+        state: disabled
+        profiles:
+          - Domain
+          - Private
+          - Public
+    - name: RMS User Creation
+      win_user:
+        name: rmsuser
+        password: rmsuser
+        state: present
+        user_cannot_change_password: yes
+        password_never_expires: yes
+        account_disabled: no
+        groups:
+          - Administrators
+          - Users
+    - name: Have RMSUser act as part of operating system
+      win_security_policy:
+        section: Privilege Rights
+        key: SeServiceLogonRight
+        value: rmsuser
+    - name: set the maximum password age
+      win_security_policy:
+        section: System Access
+        key: MaximumPasswordAge
+        value: -1
+    - name: Act as part of operating system
+      win_security_policy:
+        section: Privilege Rights
+        key: SeTcbPrivilege
+        value: rmsuser
+    - name: Log on locally
+      win_security_policy:
+        section: Privilege Rights
+        key: SeInteractiveLogonRight
+        value: rmsuser,*S-1-5-32-544,*S-1-5-32-545,*S-1-5-32-551
+    - name: Log on as a server
+      win_security_policy:
+        section: Privilege Rights
+        key: SeServiceLogonRight
+        value: '*S-1-5-20,rmsuser,*S-1-5-80-0,*S-1-5-80-3263513310-3392720605-1798839546-683002060-3227631582,*S-1-5-80-344959196-2060754871-2302487193-2804545603-1466107430,*S-1-5-80-3880718306-3832830129-1677859214-2598158968-1052248003,*S-1-5-82-1036420768-1044797643-1061213386-2937092688-4282445334,*S-1-5-82-271721585-897601226-2024613209-625570482-296978595,*S-1-5-82-3006700770-424185619-1745488364-794895919-4004696415,*S-1-5-82-3682073875-1643277370-2842298652-3532359455-2406259117,*S-1-5-82-3876422241-1344743610-1729199087-774402673-2621913236,*S-1-5-82-4068219030-1673637257-3279585211-533386110-4122969689'
+    - name: Lock Pages in Memory
+      win_security_policy:
+        section: Privilege Rights
+        key: SeLockMemoryPrivilege
+        value: rmsuser
+    - name: set timezone
+      win_timezone:
+        timezone: Eastern Standard Time
+    - name: Add Application and Web Server Role
+      win_feature:
+        name: Application-Server,Web-Server
+        state: present
+        restart: True
+        include_sub_features: True
+        include_management_tools: True
+    - name: Windows Updates
+      win_updates:
+        state: installed
+        register: update_result
+    - name: Reboot after Updates
+      win_reboot:
+        when: update_result.reboot_required

@@ -1,0 +1,11 @@
+#Determine PendingFileRenameOperations exists of not  
+$PendFileKeyPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\" 
+    
+Invoke-Command -ComputerName $cn -ScriptBlock{ 
+Get-ItemProperty -Path $using:PendFileKeyPath -name PendingFileRenameOperations} |` 
+Foreach{If($_.PendingFileRenameOperations){$PendingFile = $true}Else{$PendingFile = $false}} 
+      
+#Determine RebootRequired subkey exists or not 
+$AutoUpdateKeyPath = "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" 
+Invoke-Command -ComputerName $cn -ScriptBlock {Test-Path -Path "$using:AutoUpdateKeyPath\RebootRequired"} |` 
+Foreach{If($_ -eq $true){$AutoUpdate = $true}Else{$AutoUpdate = $false}}

@@ -1,0 +1,16 @@
+---
+
+- name: Install RNG-tools
+  apt:
+    name: rng-tools
+    state: latest
+    update_cache: yes
+
+- name: Add /dev/urandom
+  lineinfile: >
+    dest=/etc/default/rng-tools
+    regexp=''
+    state=present
+    insertafter=EOF
+    line='HRNGDEVICE=/dev/random'
+  notify: Restart rng

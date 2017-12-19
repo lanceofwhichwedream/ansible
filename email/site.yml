@@ -1,0 +1,13 @@
+---
+
+
+- name: apply config to all nodes
+  hosts: email
+  remote_user: lance
+  become: true
+  vars:
+    hash2: {SHA512-CRYPT}
+
+  roles:
+    - common
+

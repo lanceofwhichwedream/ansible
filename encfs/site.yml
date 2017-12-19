@@ -1,0 +1,11 @@
+---
+
+
+- name: apply config to all nodes
+  hosts: email
+  remote_user: lance
+  become: true
+
+  roles:
+    - common
+

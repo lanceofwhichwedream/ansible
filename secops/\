@@ -1,0 +1,5 @@
+---
+
+- name: Allow http
+  command: ufw allow "WWW Full"
+  notify: Restart ufw

@@ -1,0 +1,32 @@
+---
+
+- name: Disable Password Authentication
+  lineinfile: >
+    dest=/etc/ssh/sshd_config
+    regexp='^#PasswordAuthentication'
+    line='PasswordAuthentication no'
+  notify: Restart ssh
+  tags:
+    - ssh
+
+- name: Set up sshusers group
+  lineinfile: >
+    dest=/etc/ssh/sshd_config
+    regexp=''
+    state=present
+    insertafter=EOF
+    line='AllowGroups sshusers'
+  notify: Restart ssh
+  tags:
+    - ssh
+
+- name: Add UsePAM
+  lineinfile: >
+    dest=/etc/ssh/sshd_config
+    regexp=''
+    state=present
+    insertafter=EOF
+    line='UsePAM yes'
+  notify: Restart ssh
+  tags:
+    - ssh

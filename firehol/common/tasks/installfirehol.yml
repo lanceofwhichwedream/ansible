@@ -1,0 +1,19 @@
+---
+
+- name: Install Firehol
+  apt:
+    name: firehol
+    state: latest
+    update_cache: yes
+
+- name: Install Firehol-tools
+  apt:
+    name: firehol-tools
+    state: latest
+    update_cache: yes
+
+- name: Install Firehol-docs
+  apt:
+    name: firehol-doc
+    state: latest
+    update_cache: yes

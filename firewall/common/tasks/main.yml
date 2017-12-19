@@ -1,0 +1,11 @@
+---
+
+- name: Check if ufw is installed
+  command: dpkg -s ufw
+  register: deb_check
+
+- name: Install ufw if not installed
+  apt:
+    name: ufw
+    state: present
+  when: deb_check.stdout.find('install ok installed') != -1

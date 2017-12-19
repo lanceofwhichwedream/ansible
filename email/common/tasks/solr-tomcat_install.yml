@@ -1,0 +1,50 @@
+---
+- name: Install Solr-Tomcat and Dovecot-Solr
+  apt: name={{item}} update_cache=yes state=present
+  with_items:
+    - solr-tomcat
+    - dovecot-solr
+
+- name: Copy Schema.xml
+  command:  cp /usr/share/dovecot/solr-schema.xml /etc/solr/conf/schema.xml
+  notify: Restart Tomcat
+
+- name: Configure 20-imap.conf
+  lineinfile:
+    name: /etc/dovecot/conf.d/20-imap.conf
+    regexp: '^mail_plugins = imap_sieve$'
+    line: 'mail_plugins = imap_sieve fts fts_solr'
+
+- name: Configure 90-plugin.conf
+  copy:
+    src: 90-plugin.conf
+    dest: /etc/dovecot/conf.d/
+    owner: mail
+    group: dovecot
+    mode: 0640
+  notify: Restart Dovecot
+
+- name: Configure Tomcat to work on localhost only
+  copy:
+    src: server.xml
+    dest: /etc/tomcat8/
+    owner: root
+    group: tomcat8
+    mode: 0640
+
+
+- name: Configure Solr
+  copy:
+    src: solrconfig.xml
+    dest: /etc/solr/conf/
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Create datadir
+  file:
+    path: /decrypted-mail/solr
+    owner: tomcat8
+    group: tomcat8
+    state: directory
+  notify: Restart Tomcat

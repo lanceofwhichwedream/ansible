@@ -1,0 +1,11 @@
+---
+- hosts: dnsmasq
+  tasks:
+      - name: check for dnsmasq
+        stat:
+          path: /usr/sbin/dnsmasq
+        register: deb
+
+
+      - name: debug deb variable
+        debug: var=deb.stat.exists

@@ -1,0 +1,3 @@
+---
+- name: Install Encfs and configure system for mail storage
+  include: encfs.yml

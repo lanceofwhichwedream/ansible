@@ -1,0 +1,34 @@
+---
+
+
+- name: apply config to all nodes
+  hosts: debian
+  remote_user: lance
+  become: true
+
+  roles:
+    - common
+
+- name: cnarvaiz config
+  hosts: debian
+  remote_user: lance
+  become: true
+
+  roles:
+    - cnarvaiz
+
+- name: mparks config
+  hosts: debian
+  remote_user: lance
+  become: true
+
+  roles:
+    - mparks
+
+- name: acombs config
+  hosts: debian
+  remote_user: lance
+  become: true
+
+  roles:
+    - acombs

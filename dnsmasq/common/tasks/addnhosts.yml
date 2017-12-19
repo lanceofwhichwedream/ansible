@@ -1,0 +1,11 @@
+---
+
+- name: Copy addnhosts
+  copy:
+    src: /home/lance/ansible/dnsmasq/common/files/addnhosts
+    dest: /etc/addnhosts
+    owner: root
+    group: root
+    mode: 0644
+    force: yes
+  notify: Restart dnsmasq

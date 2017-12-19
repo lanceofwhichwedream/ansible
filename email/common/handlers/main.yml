@@ -1,0 +1,21 @@
+---
+
+- name: Restart Postfix
+  service: 
+    name: 'postfix' 
+    state: 'restarted'
+
+- name: Restart Dovecot
+  service: name=dovecot state=restarted
+
+- name: Restart Opendkim
+  service: name=opendkim state=restarted
+
+- name: Restart Clamav-Daemon
+  service: name=clamav-daemon state=restarted
+
+- name: Restart Amavis
+  service: name=amavis state=restarted
+
+- name: Restart Tomcat
+  service: name=tomcat8 state=restarted

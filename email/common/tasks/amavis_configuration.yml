@@ -1,0 +1,198 @@
+---
+- name: Add Clamav user to Amavis Group
+  user:
+    name: clamav
+    groups: amavis
+    append: yes
+  notify: Restart Clamav-Daemon
+
+- name: Install Amavis Configuration Files
+  copy: src={{ item }} dest=/etc/amavis/conf.d/{{item}}
+  with_items:
+    - 15-content_filter_mode
+    - 20-debian_defaults
+  notify: Restart Amavis
+
+- name: Restart Freshclam
+  service:
+    name: clamav-freshclam
+    state: restarted
+
+- name: Configure Postfix to use Amavis
+  copy: 
+    src: master.cf
+    dest: /etc/postfix/master.cf
+    mode: 0644
+    owner: root
+    group: root
+
+- name: Restart Postfix
+  service:
+    name: postfix
+    state: restarted
+
+- name: Check for Postfix on Port 25
+  shell: netstat -tulpn | grep 0.0.0.0:25 | awk '{print $7}' | sed -r "s/^([0-9]+{1,3}\/)//"
+  register: Port25
+- fail:
+    msg: "Postfix is not running on Port 25!"
+  when: Port25.stdout != "master"
+
+- name: Check for Postfix on Port 10025
+  shell: netstat -tulpn | grep 127.0.0.1:10025 | awk '{print $7}' | sed -r "s/^([0-9]+{1,3}\/)//"
+  register: Port10025
+- fail:
+    msg: "Postfix is not running on Port 10025!"
+  when: Port10025.stdout != "master"
+
+- name: Check for Amavisd-new
+  shell: netstat -tulpn | grep 127.0.0.1:10024 | awk '{print $7}' | sed -r "s/^([0-9]+{1,3}\/)//"
+  register: Port10024
+- fail:
+    msg: "Amavisd is not running on 10024!"
+  when: Port10024.stdout != "amavisd-new"
+
+- name: Install Razor and Pyzor
+  apt: name={{ item }} update_cache=yes state=present
+  with_items:
+    - razor
+    - pyzor
+
+- name: Create DCC-Client Folder
+  file:
+    path: /usr/src/dcc-client
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Download DCC-Client
+  get_url:
+    url: https://www.dcc-servers.net/dcc/source/dcc.tar.Z
+    dest: /usr/src/dcc.tar.Z
+
+- name: Untar DCC.tar.Z
+  shell: tar xf dcc.tar.Z -C /usr/src/dcc-client --strip-components 1
+  args:
+    chdir: /usr/src
+
+- name: Install DCC-Client
+  shell: ./configure --disable-dccm; sudo make install
+  args:
+    chdir: /usr/src/dcc-client
+
+- name: Install Pigeonhole
+  apt: name={{item}} update_cache=yes state=present
+  with_items:
+    - dovecot-sieve
+    - dovecot-managesieved
+
+- name: Configure Spamassassin
+  copy:
+    src: local.cf
+    dest: /etc/spamassassin
+    owner: root
+    group: root
+    mode: 0644
+  notify: Restart Amavis
+
+- name: Create Mysqld directory
+  file:
+    path: /var/spool/postfix/var/run/mysqld
+    owner: root
+    group: root
+    mode: 755
+    state: directory
+
+- name: Bind Mysql to Mysqld
+  mount:
+    name: /var/spool/postfix/var/run/mysqld
+    src: /var/run/mysqld
+    fstype: bind
+    opts: defaults,bind
+    state: mounted
+
+- name: Check for Spammassassin Bayes File
+  stat:
+    path: /tmp/bayes.sql
+  register: bayes
+
+- name: Check Spamassassin Version
+  shell: spamassassin --version | grep -iv perl | awk '{print $3}' | sed 's/\./_/g'
+  register: Spamassassin
+  when: bayes.stat.exists != True
+
+- name: Wget Spamassassin Bayes Database Sql File
+  get_url: url=https://svn.apache.org/repos/asf/spamassassin/tags/spamassassin_release_{{ Spamassassin.stdout }}/sql/bayes_mysql.sql dest=/tmp/bayes.sql
+  when: bayes.stat.exists != True
+
+- name: Change Engine to MYISAM
+  shell: sed -i 's/InnoDB/MYISAM/g' bayes.sql
+  args:
+    chdir: /tmp
+  when: bayes.stat.exists != True
+
+- name: Create Mysql Sa_User 
+  command: >-
+    mysql --user=root --password="{{ mysql_root_password}}" --execute='create user "sa_user"@"localhost" identified by "'{{sa_user_mysql_password}}'"'
+  when: bayes.stat.exists != True
+
+- name: Create SA_Bayes Database
+  mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    name: sa_bayes
+    state: import
+    target: /tmp/bayes.sql
+  when: bayes.stat.exists != True
+
+- name: Grant SA_User privileges on SA_Bayes database
+  command: >-
+    mysql --user=root --password="{{ mysql_root_password }}" --execute='grant select, insert, update, delete on sa_bayes.* to "sa_user"@"localhost"'
+  when: bayes.stat.exists != True
+
+- name: Flush Privileges
+  command: >-
+    mysql --user=root --password="{{ mysql_root_password }}" --execute='flush privileges'
+  when: bayes.stat.exists != True
+
+- name: Set SA_User Password
+  replace: name=/etc/spamassassin/local.cf regexp='TEMPORARY$' replace={{sa_user_mysql_password}}
+  notify: Restart Amavis
+
+- name: Configure 20-imap.conf
+  copy:
+    src: 20-imap.conf
+    dest: /etc/dovecot/conf.d/
+    owner: mail
+    group: dovecot
+    mode: 0640
+
+- name: Create Sieve Folder
+  file:
+    path: /usr/lib/dovecot/sieve
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Create Report Ham and Spam
+  copy: src={{item}} dest=/usr/lib/dovecot/sieve/{{item}} mode=0755 owner=root group=root
+  with_items:
+    - report-spam.sieve
+    - report-ham.sieve
+    - sa-learn-spam.sh
+    - sa-learn-ham.sh
+
+- name: Configure lmtp to use Sieve
+  copy:
+    src: 20-lmtp.conf
+    dest: /etc/dovecot/conf.d/
+    owner: mail
+    group: dovecot
+    mode: 0640
+  notify: Restart Postfix
+
+- name: Copy .dovecot.sieve
+  copy: src=.dovecot.sieve dest=/decrypted-mail/{{domain}}/{{username}}/ owner=root group=mail mode=0664
+  notify: Restart Dovecot

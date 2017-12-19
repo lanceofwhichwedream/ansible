@@ -1,0 +1,182 @@
+---
+- name: Set Postfix option hostname
+  debconf: 
+    name: postfix 
+    question: "postfix/mailname" 
+    value: "{{ domain }}" 
+    vtype: "string"
+
+- name: Set Postfix option type as internet site
+  debconf: 
+    name: postfix 
+    question: "postfix/main_mailer_type" 
+    value: "'Internet Site'" 
+    vtype: "string"
+
+- name: Set Postfix option Bad Recipient Delimiter
+  debconf: 
+    name: postfix 
+    question: "postfix/bad_recipient_delimiter" 
+    value: "{{ email_address }}" 
+    vtype: "string"
+
+- name: Set Postfix option type as internet site
+  debconf: 
+    name: postfix 
+    question: "postfix/destinations" 
+    value: "{{ domain }}" 
+    vtype: "string"
+
+- name: Set mysql root password
+  debconf:
+    name: mysql-server
+    question: "mysql-server/root_password password"
+    value: "{{ mysql_root_password }}"
+    vtype: "string"
+
+- name: Set mysql root password
+  debconf:
+    name: mysql-server
+    question: "mysql-server/root_password_again password"
+    value: "{{ mysql_root_password }}"
+    vtype: "string"
+
+- name: Set hostname
+  hostname:
+    name: "{{ domain }}"
+
+- name: Install Postfix Dovecot Amavisd Spamassassin Clamav and Mysql
+  apt:
+    package={{item}} state=installed update_cache=yes
+  with_items:
+      - postfix
+      - encfs
+      - postfix-mysql
+      - dovecot-core
+      - dovecot-imapd
+      - dovecot-mysql
+      - mysql-server
+      - dovecot-lmtpd
+      - python-mysqldb
+      - net-tools
+      - amavisd-new
+      - spamassassin
+      - clamav
+      - clamav-daemon
+      - zoo
+      - unzip
+      - bzip2
+      - libnet-ph-perl
+      - libnet-snpp-perl
+      - libnet-telnet-perl
+      - nomarch
+      - lzop
+      - dovecot-sieve
+      - postfix-pcre
+
+- name: Install Pip
+  apt:
+    package: python-pip
+    state: present
+
+- name: Install pexpect
+  pip:
+    name: pexpect
+
+- name: Run doveadm pw
+  expect:
+    command: doveadm pw -s SHA512-CRYPT
+    responses:
+      'Enter new password:': '{{ lance_email_password }}'
+      'Retype new password:': '{{ lance_email_password }}'
+    echo: yes
+  register: hash
+
+- name: debug pass variable
+  debug: 
+    var: >-
+      '{{ hash.stdout_lines[2] | regex_replace('{SHA512-CRYPT}', '') }}'
+
+- name: Check for mysql file
+  stat:
+    path: /tmp/mysql
+  register: st
+
+- name: debug st
+  debug:
+    var: st.stat.exists
+
+- name: Move mysql file to remote server
+  copy:
+    src: mysql
+    dest: /tmp/mysql
+    mode: 0644
+  when: st.stat.exists != True
+
+- name: Create Mailserver Database
+  mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    name: mailserver
+    state: present
+  when: st.stat.exists != True
+
+- name: Create Mysql Mailuser
+  command: >-
+    mysql --user=root --password="{{ mysql_root_password}}" --execute='create user "mailuser"@"localhost" identified by "'{{mailuser_mysql_password}}'"'
+  when: st.stat.exists != True
+
+- name: Create Mailserver tables
+  mysql_db:
+    login_user: root
+    login_password: "{{ mysql_root_password }}"
+    name: mailserver
+    state: import
+    target: /tmp/mysql
+  when: st.stat.exists != True
+
+- name: Grant Mailuser privileges on localhost
+  command: >-
+    mysql --user=root --password="{{ mysql_root_password }}" --execute='grant select on mailserver.* to "mailuser"@"localhost"'
+  when: st.stat.exists != True
+
+- name: Flush Privileges
+  command: >-
+    mysql --user=root --password="{{ mysql_root_password }}" --execute='flush privileges'
+  when: st.stat.exists != True
+
+- name: Insert Domain into mailserver
+  command: >-
+    mysql --user=root --password="{{ mysql_root_password }}" --database=mailserver --execute='INSERT INTO virtual_domains (id, name) VALUES (1, "{{ domain}}")'
+  when: st.stat.exists != True
+
+- name: Insert Email user and password hash into mailserver
+  command: >-
+    mysql --user=root --password="{{ mysql_root_password }}" --database=mailserver --execute='INSERT INTO virtual_users (id, domain_id, password, email) VALUES (1, 1, "'{{ hash.stdout_lines[2] | regex_replace('{SHA512-CRYPT}', '') }}'", "{{ email_address }}")'
+  when: st.stat.exists != True
+
+- name: Create Encrypted-mail and Decrypted-mail
+  file: path={{item}} state=directory
+  with_items:
+    - /encrypted-mail
+    - /decrypted-mail
+
+- name: Set permissions on decrypted-mail
+  file:
+    path: /decrypted-mail
+    owner: root
+    group: mail
+    mode: "u=rwx,g=rwx,o=rw"
+    recurse: yes
+
+- name: Create encfs
+  expect:
+    command: encfs /encrypted-mail /decrypted-mail --public
+    responses:
+      ":?>": p
+      'New Encfs Password:': "{{ encfs_password }}"
+      'Verify Encfs Password:': "{{ encfs_password }}"
+    echo: yes
+
+- name: Create Domain and User folders
+  file: path=/decrypted-mail/{{domain}}/{{username}} owner=root group=mail mode=0776 state=directory

@@ -1,0 +1,18 @@
+---
+- name: Install Postfix and configure system for mail storage
+  include: postfix_install.yml
+
+- name: Configure Postfix
+  include: postfix_configuration.yml
+
+- name: Configure Dovecot
+  include: dovecot_configuration.yml
+
+- name: Install Opendkim
+  include: opendkim.yml
+
+- name: Install Amavis
+  include: amavis_configuration.yml
+
+- name: Install Tomcat
+  include: solr-tomcat_install.yml

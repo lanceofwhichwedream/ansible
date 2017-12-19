@@ -1,0 +1,9 @@
+---
+
+
+- name: Check windows hosts for updates
+  hosts: windows
+  remote_user: winsible
+
+  roles: 
+  - common

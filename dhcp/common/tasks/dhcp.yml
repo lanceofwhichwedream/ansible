@@ -1,0 +1,128 @@
+---
+
+- name: Set dhcp-range
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#dhcp-range='
+    line='dhcp-range=192.168.1.20,192.168.1.249,12h'
+  notify: Restart dnsmasq
+
+- name: Set dns server DHCP option
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#dhcp-option='
+    line='dhcp-option=6, 192.168.1.103, 192.168.1.105'
+  notify: Restart dnsmasq
+
+- name: Set default router DHCP option
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#dhcp-option='
+    line='dhcp-option=3,192.168.1.1'
+  notify: Restart dnsmasq
+
+- name: Set domain DHCP option
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#dhcp-option='
+    line='dhcp-option=15,warbase.xyz'
+  notify: Restart dnsmasq
+
+- name: Set search domain DHCP option
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#dhcp-option='
+    line='dhcp-option=119,warbase.xyz'
+  notify: Restart dnsmasq
+
+- name: Set wireless dhcp-range
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#dhcp-range='
+    line='dhcp-range=wireless,192.168.0.3,192.168.0.254,255.255.255.0,12h'
+  notify: Restart dnsmasq
+
+- name: Set wireless default router dhcp-option
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#dhcp-range='
+    line='dhcp-option=wireless,3,192.168.0.1'
+  notify: Restart dnsmasq
+
+- name: Add static entries
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp=''     
+    state=present 
+    insertafter=EOF
+    line='dhcp-host=bc:5f:f4:98:bb:cf,192.168.1.12'
+  notify: Restart dnsmasq
+
+- name: Add static entries
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp=''     
+    state=present 
+    insertafter=EOF
+    line='dhcp-host=bc:5f:f4:a3:8e:88,192.168.1.11'
+  notify: Restart dnsmasq
+
+- name: Add static entries
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp=''     
+    state=present 
+    insertafter=EOF
+    line='dhcp-host=bc:5f:f4:98:ba:2d,192.168.1.10'
+  notify: Restart dnsmasq
+
+- name: Set dhcp-boot
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#dhcp-boot='
+    line='dhcp-boot=pxelinux.0'
+  notify: Restart dnsmasq
+
+- name: Enable TFTP
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#enable-tftp'
+    line='enable-tftp'
+  notify: Restart dnsmasq
+
+- name: Set TFTP Root
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#tftp-root='
+    line='tftp-root=/tftp'
+  notify: Restart dnsmasq
+
+- name: Enable secure TFTP
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#tftp-secure'
+    line='tftp-secure'
+  notify: Restart dnsmasq
+
+- name: Enable log-queries
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#log-queries'
+    line='log-queries'
+  notify: Restart dnsmasq
+
+- name: Enable log-dhcp
+  lineinfile: >
+    dest=/etc/dnsmasq.conf
+    regexp='^#log-dhcp'
+    line='log-dhcp'
+  notify: Restart dnsmasq
+
+- name: Copy tftp files
+  synchronize:
+    src=/home/lance/ansible/dhcp/common/files/tftp
+    dest=/tftp
+    compress=yes
+    links=yes
+    recursive=yes
+  notify: Restart dnsmasq

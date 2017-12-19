@@ -1,0 +1,9 @@
+---
+
+
+- name: Check windows hosts for updates
+  hosts: rmsathome
+  remote_user: winsible
+
+  roles: 
+  - common

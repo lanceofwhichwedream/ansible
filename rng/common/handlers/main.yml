@@ -1,0 +1,4 @@
+---
+
+- name: Restart rng
+  service: name=rng-tools state=restarted enabled=yes

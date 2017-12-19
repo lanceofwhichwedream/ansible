@@ -1,0 +1,10 @@
+---
+
+
+- name: apply config to all nodes
+  hosts: debian
+  become: true
+  become_method: sudo
+
+  roles:
+    - common

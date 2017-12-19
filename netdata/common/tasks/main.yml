@@ -1,0 +1,13 @@
+---
+- name: Checks for existence of Netdata
+  stat:
+    path: /usr/sbin/netdata
+  regster: Netdata
+
+- name: Install netdata
+  script: /home/lance/ansible/netdata/kickstart.sh --dont-wait
+  when: Netdata.stat.exists != True
+
+- name: Upgrade Netdata if it exists
+  shell: /usr/src/netdata.git/netdata-updater.sh
+  when: Netdata.stat.exists == True

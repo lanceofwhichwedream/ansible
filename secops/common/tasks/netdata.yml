@@ -1,0 +1,33 @@
+#- name: Create netdata UFW file
+#  file: >
+#    path=/etc/ufw/applications.d/netdata
+
+- name: Add netdata UFW profile
+  ini_file: >
+    dest=/etc/ufw/applications.d/netdata
+    section=netdata
+    option=title
+    value='Netdata montorring solution'
+    backup=no
+
+- name: Add ports to netdata UFW profile
+  ini_file: >
+    dest=/etc/ufw/applications.d/netdata
+    section=netdata
+    option=description
+    value='Free open source monitorring tool'
+    backup=no
+
+- name: Add ports to netdata UFW profile
+  ini_file: >
+    dest=/etc/ufw/applications.d/netdata
+    section=netdata
+    option=ports
+    value='19999/tcp'
+    backup=no
+
+- name: Update UFW app profile
+  command: ufw app update netdata
+
+- name: Enable netdata
+  command: ufw allow netdata

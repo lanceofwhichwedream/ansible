@@ -1,0 +1,31 @@
+version 6
+
+server_netdata_ports="tcp/19999"
+client_netdata_ports="default"
+server_plex_ports="tcp/3005,32400,32469 udp/1900,32410,32412,32413,32414"
+client_plex_ports="default"
+client_services="dns http"
+server_services="ssh netdata plex"
+
+ipv4 interface "ens3" lan
+		policy drop
+		client "${client_services}" accept
+		client "dhcp" accept
+		server "${server_services}" accept
+		server ICMP accept
+		client ICMP accept
+
+ipv6 interface "ens3" lan
+		protection strong            
+		protection all-floods 90/sec 40                                   
+		client "${client_services}" accept                                
+		server "${server_services}" accept          
+		server ICMP accept           
+		client ICMP accept           
+		server ident reject with tcp-reset                                
+		client ipv6neigh accept      
+		server ipv6neigh accept      
+		client ipv6router accept     
+		server ipv6router accept     
+		server ipv6mld accept        
+		policy return

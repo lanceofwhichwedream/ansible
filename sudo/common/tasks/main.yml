@@ -1,0 +1,14 @@
+---
+
+- name: Make sure sudo group exists
+  group:
+    name: sudo
+    state: present
+
+- name: Ensure passwordless sudo for group
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: "^%sudo"
+    line: "%sudo   ALL=(ALL:ALL) NOPASSWD: ALL"
+    validate: visudo -cf %s

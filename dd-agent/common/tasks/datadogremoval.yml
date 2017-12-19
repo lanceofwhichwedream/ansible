@@ -1,0 +1,21 @@
+---
+
+- name: Stop DD-Agent
+  win_service:
+    name: DatadogAgent
+    state: stop
+
+- name: Remove DD-Agent
+  win_service:
+    name: DatadogAgent
+    state: absent
+
+- name: Remove Datadog Files
+  win_file:
+    path: C:\Program Files (x86)\Datadog
+    state: absent
+
+- name: Remove Datadog Files Part 2 (Electric Bugaloo)
+  win_file:
+    path: C:\ProgramData\Datadog
+    state: absent

@@ -1,0 +1,17 @@
+---
+
+- name: Install ufw
+  apt:
+    name: ufw
+    state: latest
+    update_cache: yes
+
+- name: Allow ssh
+  command: ufw allow ssh/tcp
+
+- name: Setup netdata configuration
+  include: netdata.yml
+  notify: Restart ufw
+
+- name: Remove unneeded programs
+  include: removeprograms.yml

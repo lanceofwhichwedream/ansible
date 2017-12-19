@@ -1,0 +1,6 @@
+---
+
+- name: Add users to sshusers group
+  include: sshusers.yml
+  tags:
+    - ssh

@@ -1,0 +1,6 @@
+---
+
+- name: Install datadog
+  win_package:
+    path: https://s3.amazonaws.com/ddagent-windows-stable/ddagent-cli-latest.msi
+    arguments: /qn /i ddagent-cli-latest.msi APIKEY="5ff996ffd1974bd4eda126161c49584e"

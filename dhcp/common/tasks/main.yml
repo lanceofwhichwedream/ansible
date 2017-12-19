@@ -1,0 +1,10 @@
+---
+
+- name: Set domain
+  include: domain.yml
+
+- name: Configure DHCP options
+  include: dhcp.yml
+
+- name: Install nginx
+  include: nginx.yml

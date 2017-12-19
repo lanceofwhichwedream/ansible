@@ -1,0 +1,8 @@
+- name: test script module
+  hosts: windows
+  tasks:
+    - name: run test script
+      script: files/test.ps1
+      register: output
+
+    - debug: var=output.stdout

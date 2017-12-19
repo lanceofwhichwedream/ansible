@@ -1,0 +1,8 @@
+---
+
+- name: Set domain
+  lineinfile: >
+      dest=/etc/ssh/sshd_config
+      regexp='^#domain='
+      line='domain=warbase.xyz'
+  notify: Restart dnsmasq

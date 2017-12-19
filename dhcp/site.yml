@@ -1,0 +1,9 @@
+---
+
+
+- name: apply config to all nodes
+  hosts: dhcpservers
+  remote_user: lance
+
+  roles:
+    - common

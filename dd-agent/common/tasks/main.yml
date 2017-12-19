@@ -1,0 +1,7 @@
+---
+
+- name: Remove Datadog
+  include: datadogremoval.yml
+
+- name: Install New Datadog
+  include: installdatadog.yml

@@ -1,0 +1,13 @@
+- name: Add netdata UFW profile
+  ini_file: >
+    dest=/etc/ufw/applications.d/netdata
+    section=netdata
+    option=ports
+    value='Port 19999/tcp'
+    backup=no
+
+- name: Update UFW app profile
+  command: ufs app update netdata
+
+- name: Enable netdata
+  command: ufw allow netdata

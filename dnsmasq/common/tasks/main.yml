@@ -1,0 +1,16 @@
+---
+- name: check for dnsmasq
+  stat:
+    path: /usr/sbin/dnsmasq
+  register: deb
+
+- name: Install Dnsmasq
+  include: installdnsmasq.yml
+  when: deb.stat.exists == False
+
+- name: Configure Dnsmasq
+  include: configurednsmasq.yml
+  when: deb.stat.exists == False
+
+- name: Add hosts to /etc/addnhosts
+  include: addnhosts.yml

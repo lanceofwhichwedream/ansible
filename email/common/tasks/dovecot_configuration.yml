@@ -1,0 +1,86 @@
+---
+
+- name: Enable imap
+  lineinfile:
+    name: /etc/dovecot/dovecot.conf
+    insertafter: EOF
+    line: 'protocols = lmtp imap'
+
+- name: Set Mail Location
+  copy:
+    src: 10-mail.conf
+    dest: /etc/dovecot/conf.d/10-mail.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Configuring Dovecot Auth
+  copy:
+    src: 10-auth.conf
+    dest: /etc/dovecot/conf.d/10-auth.conf
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Dovecot SQL Configuration
+  copy:
+    src: auth-sql.conf.ext
+    dest: /etc/dovecot/conf.d/auth-sql.conf.ext
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Add SQL Auth information
+  copy:
+    src: dovecot-sql.conf.ext
+    dest: /etc/dovecot/dovecot-sql.conf.ext
+    owner: root
+    group: root
+    mode: 0640
+
+- name: Set Mailuser Password in SQL Auth
+  replace: name=/etc/dovecot/dovecot-sql.conf.ext regexp='password=TEMPORARY$' replace='password={{mailuser_mysql_password}}'
+
+- name: Set Dovecot Permissions
+  file:
+    path: /etc/dovecot
+    owner: mail
+    group: dovecot
+    mode: "o-rwx"
+    recurse: yes
+
+- name: Configure imap ports
+  copy:
+    src: 10-master.conf
+    dest: /etc/dovecot/conf.d/10-master.conf
+    owner: mail
+    group: dovecot
+    mode: 0640
+
+- name: Check for SSL Certs
+  stat:
+    path: /etc/ssl/private/dovecot.pem
+  register: cert
+
+- name: Generate SSL Certs
+  command: openssl req -new -x509 -days 1000 -nodes -subj="/C=US/ST=Virginia/L=Leesburg/O=LanCorp/CN=zeligman.net" -out "/etc/ssl/certs/dovecot.pem" -keyout "/etc/ssl/private/dovecot.pem"
+  when: cert.stat.exists != True
+  
+- name: Set SSL files in Dovecot config file
+  replace:
+    name: /etc/dovecot/conf.d/10-ssl.conf
+    regexp: '^#ssl_cert = </etc/dovecot/dovecot.pem$'
+    replace: 'ssl_cert = </etc/ssl/certs/dovecot.pem'
+
+- name: Set SSL files parts 2 Electric bugaloo
+  replace:
+    name: /etc/dovecot/conf.d/10-ssl.conf
+    regexp: '^#ssl_key = </etc/dovecot/private/dovecot.pem$'
+    replace: 'ssl_key = </etc/ssl/private/dovecot.pem'
+
+- name: Set SSL to required
+  replace:
+    name: /etc/dovecot/conf.d/10-ssl.conf
+    regexp: '^ssl = no$'
+    replace: 'ssl = required'
+  notify: Restart Dovecot
